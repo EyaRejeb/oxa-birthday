@@ -29,56 +29,52 @@ export default function App() {
 
   // Microphone blow detection
   useEffect(() => {
-    if (!candlesLit) return; // detect only when candles are lit
+  if (!candlesLit) return; // detect only when candles are lit
 
-    let animationFrame;
-    let audioCtx;
+  let animationFrame;
+  let audioCtx;
+  const lastSumRef = { current: 0 };
 
-    const startBlowDetection = async () => {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        const analyser = audioCtx.createAnalyser();
-        const microphone = audioCtx.createMediaStreamSource(stream);
-        microphone.connect(analyser);
-        analyser.fftSize = 256;
-        const dataArray = new Uint8Array(analyser.frequencyBinCount);
+  const startBlowDetection = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const analyser = audioCtx.createAnalyser();
+      const microphone = audioCtx.createMediaStreamSource(stream);
+      microphone.connect(analyser);
+      analyser.fftSize = 256;
+      const dataArray = new Uint8Array(analyser.frequencyBinCount);
 
-        const detectBlow = () => {
-          analyser.getByteFrequencyData(dataArray);
-          const sum = dataArray.reduce((a, b) => a + b, 0);
-          if (sum > threshold && candlesLit) {
-            setCandlesBlown(true);
-            setCandlesLit(false);
-            setWishCount(prev => prev + 1);
-            if (audioRef.current) audioRef.current.play();
-          }
+      const detectBlow = () => {
+        analyser.getByteFrequencyData(dataArray);
+        const sum = dataArray.reduce((a, b) => a + b, 0);
 
-          let lastSum = 0;
-if (sum - lastSum > threshold && candlesLit) {
-            setCandlesBlown(true);
-            setCandlesLit(false);
-            setWishCount(prev => prev + 1);
-            if (audioRef.current) audioRef.current.play();
-          }
-lastSum = sum;
+        // Check absolute sum OR delta for blow
+        if ((sum > threshold || sum - lastSumRef.current > threshold) && candlesLit) {
+          setCandlesBlown(true);
+          setCandlesLit(false);
+          setWishCount(prev => prev + 1);
+          if (audioRef.current) audioRef.current.play();
+        }
 
-          animationFrame = requestAnimationFrame(detectBlow);
-        };
+        lastSumRef.current = sum;
+        animationFrame = requestAnimationFrame(detectBlow);
+      };
 
-        detectBlow();
-      } catch (err) {
-        console.error("Microphone access denied", err);
-      }
-    };
+      detectBlow();
+    } catch (err) {
+      console.error("Microphone access denied", err);
+    }
+  };
 
-    startBlowDetection();
+  startBlowDetection();
 
-    return () => {
-      if (animationFrame) cancelAnimationFrame(animationFrame);
-      if (audioCtx) audioCtx.close();
-    };
-  }, [candlesLit]);
+  return () => {
+    if (animationFrame) cancelAnimationFrame(animationFrame);
+    if (audioCtx) audioCtx.close();
+  };
+}, [candlesLit]);
+
 
   // Intro screen
   if (step === 0) {
