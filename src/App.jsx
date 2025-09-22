@@ -9,6 +9,8 @@ export default function App() {
   const audioRef = useRef(null);
   const [wishCount, setWishCount] = useState(0);
 
+  const threshold = /iPhone|iPad|iPod/.test(navigator.userAgent) ? 400 : 1000;
+
   const photos = [
     "https://via.placeholder.com/200?text=Friend+1",
     "https://via.placeholder.com/200?text=Friend+2",
@@ -45,12 +47,22 @@ export default function App() {
         const detectBlow = () => {
           analyser.getByteFrequencyData(dataArray);
           const sum = dataArray.reduce((a, b) => a + b, 0);
-          if (sum > 1000 && candlesLit) {
+          if (sum > threshold && candlesLit) {
             setCandlesBlown(true);
             setCandlesLit(false);
             setWishCount(prev => prev + 1);
             if (audioRef.current) audioRef.current.play();
           }
+
+          let lastSum = 0;
+if (sum - lastSum > threshold && candlesLit) {
+            setCandlesBlown(true);
+            setCandlesLit(false);
+            setWishCount(prev => prev + 1);
+            if (audioRef.current) audioRef.current.play();
+          }
+lastSum = sum;
+
           animationFrame = requestAnimationFrame(detectBlow);
         };
 
