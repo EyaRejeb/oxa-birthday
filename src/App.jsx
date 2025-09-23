@@ -9,7 +9,6 @@ export default function App() {
   const audioRef = useRef(null);
   const [wishCount, setWishCount] = useState(0);
 
-  // Harder blow threshold
   const threshold = /iPhone|iPad|iPod/.test(navigator.userAgent) ? 900 : 2000;
 
   const photos = [
@@ -32,13 +31,16 @@ export default function App() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Microphone blow detection with smoothing
+  // Microphone blow detection with smoothing & 2s delay
   useEffect(() => {
     if (!candlesLit) return;
 
     let animationFrame;
     let audioCtx;
     const lastSums = [];
+    let readyToBlow = false;
+
+    const timer = setTimeout(() => { readyToBlow = true; }, 2000);
 
     const startBlowDetection = async () => {
       try {
@@ -54,13 +56,11 @@ export default function App() {
           analyser.getByteFrequencyData(dataArray);
           const sum = dataArray.reduce((a, b) => a + b, 0);
 
-          // Push sum to lastSums, keep last 5 frames
           lastSums.push(sum);
           if (lastSums.length > 5) lastSums.shift();
           const avg = lastSums.reduce((a, b) => a + b, 0) / lastSums.length;
 
-          // Only blow if average exceeds threshold
-          if (avg > threshold && candlesLit) {
+          if (readyToBlow && avg > threshold && candlesLit) {
             setCandlesBlown(true);
             setCandlesLit(false);
             setWishCount(prev => prev + 1);
@@ -79,12 +79,12 @@ export default function App() {
     startBlowDetection();
 
     return () => {
+      clearTimeout(timer);
       if (animationFrame) cancelAnimationFrame(animationFrame);
       if (audioCtx) audioCtx.close();
     };
   }, [candlesLit]);
 
-  // Intro screen
   if (step === 0) {
     return (
       <div style={{
@@ -127,7 +127,6 @@ export default function App() {
     );
   }
 
-  // Cake screen
   return (
     <div style={{
       fontFamily: "'Comic Sans MS', cursive",
@@ -139,24 +138,24 @@ export default function App() {
       <h1 style={{ color: "#ff3366", fontSize: "3rem", marginBottom: "1rem", animation: "fadeIn 2s" }}>
         🎂 Happy Birthday, Oxana! 🎂
       </h1>
-      <p style={{ fontSize: "1.2rem", marginBottom: "2rem", animation: "fadeIn 3s" }}>
+      <p style={{ fontSize: "1.2rem", marginBottom: "2rem", color: "#ff6699", animation: "fadeIn 3s" }}>
         {candlesLit ? "Blow your candles and make a wish! 🌟" : wishCount === 1 ? "Amazing! 🎉 Wishes made and candles blown!" : "Use the match to relight your candles for another wish!"}
       </p>
 
-      {/* Cake */}
+      {/* Cake with extra top space */}
       <div style={{
         position: "relative",
         width: "280px",
-        height: "180px",
+        height: "220px", // taller to add space
         background: "linear-gradient(to top, #ff9999, #ffe6cc)",
-        margin: "0 auto",
+        margin: "160px auto 0 auto", // extra 40px space on top
         borderRadius: "0 0 40px 40px",
         boxShadow: "0 5px 20px rgba(0,0,0,0.3)",
         overflow: "visible",
         animation: candlesBlown ? "shakeCake 0.5s" : "pop 0.5s"
       }}>
         {[0,1,2,3,4].map(i => (
-          <div key={i} style={{ position: "absolute", width: "14px", height: "50px", background: "#fff", top: "-50px", left: `${30 + i*50}px`, borderRadius: "3px" }}>
+          <div key={i} style={{ position: "absolute", width: "14px", height: "50px", background: "#fff", top: "-70px", left: `${30 + i*50}px`, borderRadius: "3px" }}>
             {candlesLit && (
               <div style={{
                 width: "10px",
