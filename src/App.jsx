@@ -2,14 +2,15 @@ import React, { useState, useEffect, useRef } from "react";
 import Confetti from "react-confetti";
 
 export default function App() {
-  const [step, setStep] = useState(0); // 0: intro, 1: cake + photos
+  const [step, setStep] = useState(0);
   const [candlesLit, setCandlesLit] = useState(true);
   const [candlesBlown, setCandlesBlown] = useState(false);
   const [windowSize, setWindowSize] = useState({ width: window.innerWidth, height: window.innerHeight });
   const audioRef = useRef(null);
   const [wishCount, setWishCount] = useState(0);
 
-  const threshold = /iPhone|iPad|iPod/.test(navigator.userAgent) ? 600 : 1500; // harder to blow
+  // Harder blow threshold
+  const threshold = /iPhone|iPad|iPod/.test(navigator.userAgent) ? 900 : 2000;
 
   const photos = [
     "https://via.placeholder.com/200?text=Friend+1",
@@ -23,23 +24,21 @@ export default function App() {
     "https://via.placeholder.com/200?text=Friend+9",
   ];
 
-  // Shuffle photos
   const shuffledPhotos = photos.sort(() => 0.5 - Math.random());
 
-  // Window resize for confetti
   useEffect(() => {
     const handleResize = () => setWindowSize({ width: window.innerWidth, height: window.innerHeight });
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Microphone blow detection
+  // Microphone blow detection with smoothing
   useEffect(() => {
     if (!candlesLit) return;
 
     let animationFrame;
     let audioCtx;
-    const lastSumRef = { current: 0 };
+    const lastSums = [];
 
     const startBlowDetection = async () => {
       try {
@@ -55,14 +54,19 @@ export default function App() {
           analyser.getByteFrequencyData(dataArray);
           const sum = dataArray.reduce((a, b) => a + b, 0);
 
-          if ((sum > threshold || sum - lastSumRef.current > threshold) && candlesLit) {
+          // Push sum to lastSums, keep last 5 frames
+          lastSums.push(sum);
+          if (lastSums.length > 5) lastSums.shift();
+          const avg = lastSums.reduce((a, b) => a + b, 0) / lastSums.length;
+
+          // Only blow if average exceeds threshold
+          if (avg > threshold && candlesLit) {
             setCandlesBlown(true);
             setCandlesLit(false);
             setWishCount(prev => prev + 1);
             if (audioRef.current) audioRef.current.play();
           }
 
-          lastSumRef.current = sum;
           animationFrame = requestAnimationFrame(detectBlow);
         };
 
@@ -95,9 +99,7 @@ export default function App() {
           color: "#ff3366",
           animation: "fadeIn 1.5s",
           textShadow: "2px 2px #fff3"
-        }}>
-          Today is... your special day, Oxana! 🎉
-        </h1>
+        }}>Today is... your special day, Oxana! 🎉</h1>
         <p style={{ fontSize: "1.5rem", color: "#ff6699", marginTop: "2rem" }}>
           Another year of laughter, adventures, and unforgettable moments. 🌟
         </p>
@@ -120,9 +122,7 @@ export default function App() {
           }}
           onMouseEnter={e => e.currentTarget.style.transform = "scale(1.05)"}
           onMouseLeave={e => e.currentTarget.style.transform = "scale(1)"}
-        >
-          Yes!
-        </button>
+        >Yes!</button>
       </div>
     );
   }
@@ -172,35 +172,29 @@ export default function App() {
             )}
           </div>
         ))}
-
-        {!candlesBlown && [...Array(8)].map((_, i) => (
-          <div key={i} style={{
-            position: "absolute",
-            width: "8px",
-            height: "8px",
-            borderRadius: "50%",
-            background: "#fff0b3",
-            top: `${20 + Math.random()*100}px`,
-            left: `${Math.random()*250}px`,
-            animation: `sparkle ${1+Math.random()}s infinite alternate`,
-            opacity: 0.8,
-          }}></div>
-        ))}
       </div>
 
-      {/* Confetti */}
-      {!candlesLit && <Confetti width={windowSize.width} height={windowSize.height} />}
+      {!candlesBlown && [...Array(8)].map((_, i) => (
+        <div key={i} style={{
+          position: "absolute",
+          width: "8px",
+          height: "8px",
+          borderRadius: "50%",
+          background: "#fff0b3",
+          top: `${20 + Math.random()*100}px`,
+          left: `${Math.random()*250}px`,
+          animation: `sparkle ${1+Math.random()}s infinite alternate`,
+          opacity: 0.8,
+        }}></div>
+      ))}
 
+      {!candlesLit && <Confetti width={windowSize.width} height={windowSize.height} />}
       <audio ref={audioRef} src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" />
 
-      {/* Re-light Candles Button */}
       {!candlesLit && (
         <div style={{ marginTop: "2rem" }}>
           <button
-            onClick={() => {
-              setCandlesLit(true);
-              setCandlesBlown(false);
-            }}
+            onClick={() => { setCandlesLit(true); setCandlesBlown(false); }}
             style={{
               padding: "1rem 2rem",
               fontSize: "1.2rem",
@@ -210,24 +204,31 @@ export default function App() {
               border: "none",
               cursor: "pointer",
               boxShadow: "0 4px 10px rgba(0,0,0,0.2)",
-              display: "flex",
-              alignItems: "center",
-              gap: "0.5rem"
             }}
-          >
-            🔥 Light Candles Again!
-          </button>
+          >🔥 Light Candles Again!</button>
         </div>
       )}
 
-      {/* 3 Rows Photo Grid */}
+      {/* 3 Rows Animated Photo Grid */}
       {candlesBlown && (
         <div style={{ marginTop: "2rem", display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1rem" }}>
           {shuffledPhotos.map((url, idx) => (
-            <div key={idx} style={{ width: "100%", aspectRatio: "1", borderRadius: "15px", overflow: "hidden", boxShadow: "0 4px 10px rgba(0,0,0,0.3)" }}>
-              <img src={url} alt={`Friend ${idx+1}`} style={{ width: "100%", height: "100%", objectFit: "cover", transition: "transform 0.3s" }}
-                onMouseEnter={e => e.currentTarget.style.transform = "scale(1.1)"}
-                onMouseLeave={e => e.currentTarget.style.transform = "scale(1)"} />
+            <div key={idx} style={{
+              width: "100%",
+              aspectRatio: "1",
+              borderRadius: "15px",
+              overflow: "hidden",
+              boxShadow: "0 4px 10px rgba(0,0,0,0.3)",
+              animation: `floatPhoto 5s ease-in-out ${idx * 0.3}s infinite alternate`
+            }}>
+              <img src={url} alt={`Friend ${idx+1}`} style={{
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+                transition: "transform 0.3s"
+              }}
+              onMouseEnter={e => e.currentTarget.style.transform = "scale(1.1)"}
+              onMouseLeave={e => e.currentTarget.style.transform = "scale(1)"} />
             </div>
           ))}
         </div>
@@ -238,6 +239,7 @@ export default function App() {
         @keyframes pop { 0% { transform: scale(0.8); } 100% { transform: scale(1); } }
         @keyframes shakeCake { 0% { transform: rotate(-5deg); } 25% { transform: rotate(5deg); } 50% { transform: rotate(-3deg); } 75% { transform: rotate(3deg); } 100% { transform: rotate(0deg); } }
         @keyframes sparkle { 0% { transform: scale(0.5); opacity: 0.3; } 100% { transform: scale(1.2); opacity: 1; } }
+        @keyframes floatPhoto { 0% { transform: translateY(0) rotate(0deg); } 100% { transform: translateY(-10px) rotate(2deg); } }
       `}</style>
     </div>
   );
