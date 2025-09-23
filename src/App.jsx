@@ -1,5 +1,28 @@
 import React, { useState, useEffect, useRef } from "react";
 import Confetti from "react-confetti";
+import img1 from "./assets/img1.jpeg";
+import img2 from "./assets/img2.jpeg";
+import img3 from "./assets/img3.jpeg";
+import img4 from "./assets/img4.jpeg";
+import img5 from "./assets/img5.jpeg";
+import img6 from "./assets/img6.jpeg";
+import img7 from "./assets/img7.jpeg";
+import img8 from "./assets/img8.jpeg";
+import img9 from "./assets/img9.jpeg";
+import img10 from "./assets/img10.jpeg";
+import img11 from "./assets/img11.jpeg";
+import img12 from "./assets/img12.jpeg";
+import img13 from "./assets/img13.jpeg";
+import img14 from "./assets/img14.jpeg";
+import img15 from "./assets/img15.jpeg";
+import img16 from "./assets/img16.jpeg";
+import img17 from "./assets/img17.jpeg";
+import img18 from "./assets/img18.jpeg";
+import img19 from "./assets/img19.jpeg";
+import img20 from "./assets/img20.jpeg";
+import img21 from "./assets/img21.jpeg";
+import img22 from "./assets/img22.jpeg";
+import img23 from "./assets/img23.jpeg";
 
 export default function App() {
   const [step, setStep] = useState(0);
@@ -12,15 +35,30 @@ export default function App() {
   const threshold = /iPhone|iPad|iPod/.test(navigator.userAgent) ? 900 : 2000;
 
   const photos = [
-    "https://via.placeholder.com/200?text=Friend+1",
-    "https://via.placeholder.com/200?text=Friend+2",
-    "https://via.placeholder.com/200?text=Friend+3",
-    "https://via.placeholder.com/200?text=Friend+4",
-    "https://via.placeholder.com/200?text=Friend+5",
-    "https://via.placeholder.com/200?text=Friend+6",
-    "https://via.placeholder.com/200?text=Friend+7",
-    "https://via.placeholder.com/200?text=Friend+8",
-    "https://via.placeholder.com/200?text=Friend+9",
+    img1,
+    img2,
+    img3,
+    img4,
+    img5,
+    img6,
+    img7,
+    img8,
+    img9,
+    img10,
+    img11,
+    img12,
+    img13,
+    img14,
+    img15,
+    img16,
+    img17,
+    img18,
+    img19,
+    img20,
+    img21,
+    img22,
+    img23,
+
   ];
 
   const shuffledPhotos = photos.sort(() => 0.5 - Math.random());
@@ -208,38 +246,65 @@ export default function App() {
         </div>
       )}
 
-      {/* 3 Rows Animated Photo Grid */}
-      {candlesBlown && (
-        <div style={{ marginTop: "2rem", display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1rem" }}>
-          {shuffledPhotos.map((url, idx) => (
-            <div key={idx} style={{
-              width: "100%",
-              aspectRatio: "1",
-              borderRadius: "15px",
-              overflow: "hidden",
-              boxShadow: "0 4px 10px rgba(0,0,0,0.3)",
-              animation: `floatPhoto 5s ease-in-out ${idx * 0.3}s infinite alternate`
-            }}>
-              <img src={url} alt={`Friend ${idx+1}`} style={{
+      {/* Multi-row Animated Photo Gallery (Mobile-Friendly) */}
+{/* Multi-row Animated Photo Gallery (Mobile-Friendly, Full Images) */}
+{candlesBlown && (
+  <div style={{
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))",
+    gap: "0.5rem",
+    marginTop: "2rem",
+    padding: "1rem",
+  }}>
+    {Array.from({ length: 30 }).map((_, cellIdx) => {
+      // Shuffle photos for each cell
+      const cellPhotos = [...shuffledPhotos].sort(() => 0.5 - Math.random());
+      const duration = 6 + Math.random() * 5; // 6–11s per image
+
+      return (
+        <div key={cellIdx} style={{
+          position: "relative",
+          overflow: "hidden",
+          borderRadius: "10px",
+          aspectRatio: "1",
+          boxShadow: "0 2px 6px rgba(0,0,0,0.3)",
+        }}>
+          {cellPhotos.map((url, idx) => (
+            <img 
+              key={idx}
+              src={url}
+              alt={`Photo ${idx+1}`}
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
                 width: "100%",
                 height: "100%",
-                objectFit: "cover",
-                transition: "transform 0.3s"
+                objectFit: "cover", // keeps full photo without stretching
+                opacity: 0,
+                animation: `fadeCarousel${cellIdx} ${duration * cellPhotos.length}s infinite`,
+                animationDelay: `${idx * duration}s`,
               }}
-              onMouseEnter={e => e.currentTarget.style.transform = "scale(1.1)"}
-              onMouseLeave={e => e.currentTarget.style.transform = "scale(1)"} />
-            </div>
+            />
           ))}
-        </div>
-      )}
+          <style>{`
+            @keyframes fadeCarousel${cellIdx} {
+              0% { opacity: 0; }
+              5% { opacity: 1; }
+              25% { opacity: 1; }
+              30% { opacity: 0; }
+              100% { opacity: 0; }
+            }
+          `}</style>
 
-      <style>{`
-        @keyframes flicker { 0% { transform: scaleY(1); } 100% { transform: scaleY(1.3); } }
-        @keyframes pop { 0% { transform: scale(0.8); } 100% { transform: scale(1); } }
-        @keyframes shakeCake { 0% { transform: rotate(-5deg); } 25% { transform: rotate(5deg); } 50% { transform: rotate(-3deg); } 75% { transform: rotate(3deg); } 100% { transform: rotate(0deg); } }
-        @keyframes sparkle { 0% { transform: scale(0.5); opacity: 0.3; } 100% { transform: scale(1.2); opacity: 1; } }
-        @keyframes floatPhoto { 0% { transform: translateY(0) rotate(0deg); } 100% { transform: translateY(-10px) rotate(2deg); } }
-      `}</style>
+        </div>
+      )
+    })}
+  </div>
+)}
+
+
+
     </div>
   );
 }
