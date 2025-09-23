@@ -32,7 +32,7 @@ export default function App() {
   const audioRef = useRef(null);
   const [wishCount, setWishCount] = useState(0);
 
-  const threshold = /iPhone|iPad|iPod/.test(navigator.userAgent) ? 900 : 2000;
+  const threshold = /iPhone|iPad|iPod/.test(navigator.userAgent) ? 1500 : 2000;
 
   const photos = [
     img1,
@@ -224,10 +224,10 @@ export default function App() {
           opacity: 0.8,
         }}></div>
       ))}
-
+      {/*}
       {!candlesLit && <Confetti width={windowSize.width} height={windowSize.height} />}
       <audio ref={audioRef} src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" />
-
+     */}
       {!candlesLit && (
         <div style={{ marginTop: "2rem" }}>
           <button
