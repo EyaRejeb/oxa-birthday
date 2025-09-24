@@ -44,6 +44,28 @@ import img41 from "./assets/img41.jpeg";
 import img42 from "./assets/img42.jpeg";
 import img43 from "./assets/img43.jpeg";
 import img44 from "./assets/img44.jpeg";
+import img45 from "./assets/img45.jpeg";
+import img46 from "./assets/img46.jpeg";
+import img47 from "./assets/img47.jpeg";
+import img48 from "./assets/img48.jpeg";
+import img49 from "./assets/img49.jpeg";
+import img50 from "./assets/img50.jpeg";
+import img51 from "./assets/img51.jpeg";
+import img52 from "./assets/img52.jpeg";
+import img53 from "./assets/img53.jpeg";
+import img54 from "./assets/img54.jpeg";
+import img55 from "./assets/img55.jpeg";
+import img56 from "./assets/img56.jpeg";
+import img57 from "./assets/img57.jpeg";
+import img58 from "./assets/img58.jpeg";
+import img59 from "./assets/img59.jpeg";
+import img60 from "./assets/img60.jpeg";
+import img61 from "./assets/img61.jpeg";
+import img62 from "./assets/img62.jpeg";
+import img63 from "./assets/img63.jpeg";
+import img64 from "./assets/img64.jpeg";
+
+import happyBirthday from "./assets/happy_birthday.mp3";
 
 export default function App() {
   const [step, setStep] = useState(0);
@@ -100,6 +122,26 @@ export default function App() {
     img42,
     img43,
     img44,
+    img45,
+    img46,
+    img47,
+    img48,
+    img49,
+    img50,
+    img51,
+    img52,
+    img53,
+    img54,
+    img55,
+    img56,
+    img57,
+    img58,
+    img59,
+    img60,
+    img61,
+    img62,
+    img63,
+    img64,
 
   ];
 
@@ -267,7 +309,8 @@ export default function App() {
         }}></div>
       ))}
       {!candlesLit && <Confetti width={windowSize.width} height={windowSize.height} />}
-      <audio ref={audioRef} src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" />
+{/* Birthday Music */}
+<audio ref={audioRef} src={happyBirthday} />
      
       {!candlesLit && (
         <div style={{ marginTop: "2rem" }}>
@@ -304,41 +347,45 @@ export default function App() {
 
       return (
         <div key={cellIdx} style={{
-          position: "relative",
-          overflow: "hidden",
-          borderRadius: "10px",
-          aspectRatio: "1",
-          boxShadow: "0 2px 6px rgba(0,0,0,0.3)",
-        }}>
-          {cellPhotos.map((url, idx) => (
-            <img 
-              key={idx}
-              src={url}
-              alt={`Photo ${idx+1}`}
-              style={{
-                position: "absolute",
-                top: 0,
-                left: 0,
-                width: "100%",
-                height: "100%",
-                objectFit: "cover", // keeps full photo without stretching
-                opacity: 0,
-                animation: `fadeCarousel${cellIdx} ${duration * cellPhotos.length}s infinite`,
-                animationDelay: `${idx * duration}s`,
-              }}
-            />
-          ))}
-          <style>{`
-            @keyframes fadeCarousel${cellIdx} {
-              0% { opacity: 0; }
-              5% { opacity: 1; }
-              25% { opacity: 1; }
-              30% { opacity: 0; }
-              100% { opacity: 0; }
-            }
-          `}</style>
+  position: "relative",
+  overflow: "hidden",
+  borderRadius: "10px",
+  aspectRatio: "1",
+  boxShadow: "0 2px 6px rgba(0,0,0,0.3)",
+  transition: "transform 0.3s",   // <-- add transition here
+}}
+  onMouseEnter={e => e.currentTarget.style.transform = "scale(1.1)"} // scale on hover
+  onMouseLeave={e => e.currentTarget.style.transform = "scale(1)"}   // back to normal
+>
+  {cellPhotos.map((url, idx) => (
+    <img 
+      key={idx}
+      src={url}
+      alt={`Photo ${idx+1}`}
+      style={{
+        position: "absolute",
+        top: 0,
+        left: 0,
+        width: "100%",
+        height: "100%",
+        objectFit: "cover",
+        opacity: 0,
+        animation: `fadeCarousel${cellIdx} ${duration * cellPhotos.length}s infinite`,
+        animationDelay: `${idx * duration}s`,
+      }}
+    />
+  ))}
+  <style>{`
+    @keyframes fadeCarousel${cellIdx} {
+      0% { opacity: 0; }
+      5% { opacity: 1; }
+      25% { opacity: 1; }
+      30% { opacity: 0; }
+      100% { opacity: 0; }
+    }
+  `}</style>
+</div>
 
-        </div>
       )
     })}
   </div>
