@@ -153,6 +153,7 @@ export default function App() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  
   // Microphone blow detection with smoothing & 2s delay
   useEffect(() => {
     if (!candlesLit) return;
@@ -233,7 +234,10 @@ export default function App() {
           Ready to make a wish and blow your birthday candles?
         </p>
         <button
-          onClick={() => setStep(1)}
+           onClick={() => {
+    setStep(1);
+    startBlowDetection(); // start microphone after user interaction
+  }}
           style={{
             marginTop: "2rem",
             padding: "1rem 2rem",
