@@ -145,6 +145,14 @@ export default function App() {
 
   ];
 
+
+
+    const playHappyBirthday = () => {
+    const audio = new Audio(happyBirthday);
+    audio.play().catch(err => console.log("Playback failed", err));
+  };
+
+
   const shuffledPhotos = photos.sort(() => 0.5 - Math.random());
 
   useEffect(() => {
@@ -189,7 +197,8 @@ export default function App() {
             setCandlesBlown(true);
             setCandlesLit(false);
             setWishCount(prev => prev + 1);
-            if (audioRef.current) audioRef.current.play();
+            if (audioRef.current) playHappyBirthday();
+
               }, 1500);
 
           }
@@ -317,8 +326,7 @@ export default function App() {
         }}></div>
       ))}
       {!candlesLit && <Confetti width={windowSize.width} height={windowSize.height} />}
-{/* Birthday Music */}
-<audio ref={audioRef} src={happyBirthday} />
+
      
       {!candlesLit && (
         <div style={{ marginTop: "2rem" }}>
