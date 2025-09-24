@@ -183,10 +183,14 @@ export default function App() {
           const avg = lastSums.reduce((a, b) => a + b, 0) / lastSums.length;
 
           if (readyToBlow && avg > threshold && candlesLit) {
+              setTimeout(() => {  // <-- 1.5s delay
+
             setCandlesBlown(true);
             setCandlesLit(false);
             setWishCount(prev => prev + 1);
             if (audioRef.current) audioRef.current.play();
+              }, 1500);
+
           }
 
           animationFrame = requestAnimationFrame(detectBlow);
