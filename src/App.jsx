@@ -23,6 +23,27 @@ import img20 from "./assets/img20.jpeg";
 import img21 from "./assets/img21.jpeg";
 import img22 from "./assets/img22.jpeg";
 import img23 from "./assets/img23.jpeg";
+import img24 from "./assets/img24.jpeg";
+import img25 from "./assets/img25.jpeg";
+import img26 from "./assets/img26.jpeg";
+import img27 from "./assets/img27.jpeg";
+import img28 from "./assets/img28.jpeg";
+import img29 from "./assets/img29.jpg";
+import img30 from "./assets/img30.jpeg";
+import img31 from "./assets/img31.jpeg";
+import img32 from "./assets/img32.jpeg";
+import img33 from "./assets/img33.jpeg";
+import img34 from "./assets/img34.jpeg";
+import img35 from "./assets/img35.jpeg";
+import img36 from "./assets/img36.jpeg";
+import img37 from "./assets/img37.jpeg";
+import img38 from "./assets/img38.jpeg";
+import img39 from "./assets/img39.jpeg";
+import img40 from "./assets/img40.jpeg";
+import img41 from "./assets/img41.jpeg";
+import img42 from "./assets/img42.jpeg";
+import img43 from "./assets/img43.jpeg";
+import img44 from "./assets/img44.jpeg";
 
 export default function App() {
   const [step, setStep] = useState(0);
@@ -58,6 +79,27 @@ export default function App() {
     img21,
     img22,
     img23,
+    img24,
+    img25,
+    img26,
+    img27,
+    img28,
+    img29,
+    img30,
+    img31,
+    img32,
+    img33,
+    img34,
+    img35,
+    img36,
+    img37,
+    img38,
+    img39,
+    img40,
+    img41,
+    img42,
+    img43,
+    img44,
 
   ];
 
@@ -224,10 +266,9 @@ export default function App() {
           opacity: 0.8,
         }}></div>
       ))}
-      {/*}
       {!candlesLit && <Confetti width={windowSize.width} height={windowSize.height} />}
       <audio ref={audioRef} src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" />
-     */}
+     
       {!candlesLit && (
         <div style={{ marginTop: "2rem" }}>
           <button
